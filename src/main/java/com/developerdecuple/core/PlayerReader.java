@@ -66,7 +66,9 @@ public class PlayerReader {
 
     public static void printAllPlayer() {
 
-        for (Player player : readAllPlayers()) {
+        List<Player> pl = readAllPlayers();
+
+        for (Player player : pl) {
             System.out.println(player.getId() + "(" + player.getName() + ") : Lv. " + player.getLevel() + " EXP. " + player.getExp() + " / " + player.getGold() + "G, " + player.getCash() + "C");
         }
 
