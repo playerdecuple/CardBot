@@ -24,7 +24,7 @@ public class CardReader {
         String cardListStr = new ReadFile().readString(cardListFile);
 
         /*
-         * Card List Text File is using svc type. [ DON'T USE SPACE AND COMMA ]
+         * Card List Text File is using svc format. [ DON'T USE SPACE AND COMMA ]
          * ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
          * ID,NAME,STAR,ATK,DEF,DESCRIPTION
          */
