@@ -43,11 +43,11 @@ public class Card {
     }
 
     public void setATK(int amount, boolean add) {
-        atk = add ? atk += amount : amount;
+        atk = add ? atk + amount : amount;
     }
 
     public void setDEF(int amount, boolean add) {
-        def = add ? def += amount : amount;
+        def = add ? def + amount : amount;
     }
 
 }
