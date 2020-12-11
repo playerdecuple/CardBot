@@ -10,6 +10,7 @@ import java.util.List;
 public class CardReader {
 
     public static List<Card> readAllCards() {
+
         String basicPath = Main.BASIC_PATH;
         File cardListFile = new File(basicPath + "/CardList.txt");
 
@@ -63,6 +64,7 @@ public class CardReader {
         }
 
         return cardList;
+
     }
 
     public static void printAllCardInfo() {
