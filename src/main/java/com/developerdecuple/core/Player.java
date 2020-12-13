@@ -7,10 +7,12 @@ import java.io.File;
 public class Player {
 
     private final long id;
-    private final String name;
+    private String name;
     private int level;
     private long exp, gold, cash;
+    private final File databaseFile;
 
+    private String backupName;
     private int backupLevel;
     private long backupEXP, backupGold, backupCash;
 
@@ -21,6 +23,8 @@ public class Player {
         this.exp = exp;
         this.gold = gold;
         this.cash = cash;
+
+        this.databaseFile = new File(Main.BASIC_PATH + "/Database/" + id);
     }
 
     private String getPlayerInfoForSVCFormat() {
@@ -53,6 +57,12 @@ public class Player {
 
     public String getName() {
         return name;
+    }
+
+    public void setName(String name) {
+        backupName = this.name;
+        this.name = name;
+        applyPlayerInfoIntoPlayerLists();
     }
 
     public void setCash(boolean add, long cash) {
@@ -100,9 +110,15 @@ public class Player {
             String playerListStr = playerListFile.exists() ? new ReadFile().readString(playerListFile) : "";
 
             assert playerListStr != null;
-            String result = playerListStr.equals("") ? getPlayerInfoForSVCFormat() : "\n" + getPlayerInfoForSVCFormat();
+            String result = playerListStr.equals("") ? getPlayerInfoForSVCFormat() : playerListStr + "\n" + getPlayerInfoForSVCFormat();
             new WriteFile().writeString(playerListFile, result);
         }
+
+        if (Main.verbose) LogHelper.userLog("Applied user information", this);
+    }
+
+    public String toString() {
+        return "ID | " + id + ", Name | " + name + ", Level | " + level + " EXP | " + exp + ", Gold | " + gold + "G, Cash | " + cash + "C";
     }
 
 }
