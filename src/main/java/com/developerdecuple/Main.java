@@ -14,6 +14,8 @@ import java.io.File;
 public class Main {
 
     public static String BASIC_PATH = System.getProperty("user.dir");
+    public static JDA jda;
+    public static boolean verbose = true;
 
     public static void main(String args[]) throws LoginException, InterruptedException {
 
@@ -32,6 +34,8 @@ public class Main {
                 .addEventListeners(new Listener())
                 .build()
                 .awaitReady();
+
+        jda = botCore;
 
     }
 
