@@ -27,7 +27,7 @@ public class PlayerReader {
         /*
          * Player List Text File is using svc format. [ DON'T USE SPACE AND COMMA ]
          * ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
-         * ID,NAME,LEVEL,EXP,GOLD,CASH
+         * ID,NAME,LEVEL,EXP,GOLD,CASH,0
          */
 
         String[] players = playerListStr != null ? playerListStr.split("\n") : new String[0];
@@ -69,7 +69,7 @@ public class PlayerReader {
         List<Player> pl = readAllPlayers();
 
         for (Player player : pl) {
-            System.out.println(player.getId() + "(" + player.getName() + ") : Lv. " + player.getLevel() + " EXP. " + player.getExp() + " / " + player.getGold() + "G, " + player.getCash() + "C");
+            System.out.println(player.toString());
         }
 
     }
