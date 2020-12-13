@@ -9,6 +9,18 @@ import java.util.List;
 
 public class CardReader {
 
+    public static Card readCardById(int id) {
+
+        List<Card> cardList = readAllCards();
+
+        for (Card card : cardList) {
+            if (card.getId() == id) return card;
+        }
+
+        return null;
+
+    }
+
     public static List<Card> readAllCards() {
 
         String basicPath = Main.BASIC_PATH;
