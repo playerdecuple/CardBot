@@ -1,5 +1,7 @@
 package com.developerdecuple.core;
 
+import java.util.Arrays;
+
 public class Card {
 
     private final int id;
@@ -48,6 +50,15 @@ public class Card {
 
     public void setDEF(int amount, boolean add) {
         def = add ? def + amount : amount;
+    }
+
+    public String getCardInfoForSVCFormat() {
+        String[] info = {String.valueOf(id), name, String.valueOf(star), String.valueOf(atk), String.valueOf(def), description};
+        return String.join(",", Arrays.copyOfRange(info, 0, info.length));
+    }
+
+    public String toString(boolean msg) {
+        return msg ? name + "(★" + star + ") / ATK " + atk + ", DEF " + def + " / " + description : id + name + "(★" + star + ") / ATK " + atk + ", DEF " + def + " / " + description;
     }
 
 }
