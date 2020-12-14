@@ -1,5 +1,8 @@
 package com.developerdecuple.core;
 
+import com.developerdecuple.Main;
+
+import java.io.File;
 import java.util.Arrays;
 
 public class Card {
@@ -59,6 +62,17 @@ public class Card {
 
     public String toString(boolean msg) {
         return msg ? name + "(★" + star + ") / ATK " + atk + ", DEF " + def + " / " + description : id + name + "(★" + star + ") / ATK " + atk + ", DEF " + def + " / " + description;
+    }
+
+    public void saveDeck(String id) {
+        String cardInfo = getCardInfoForSVCFormat();
+        File deckFile = new File(Main.BASIC_PATH + "/Database/" + id + "/deck.txt");
+        if (!deckFile.exists()) return;
+
+        String decks = new ReadFile().readString(deckFile);
+        String result = decks == null || decks.equals("") ? cardInfo : decks + "\n" + cardInfo;
+
+        new WriteFile().writeString(deckFile, result);
     }
 
 }

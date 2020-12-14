@@ -38,6 +38,32 @@ public class CardManager {
 
     }
 
+    public static void removeCard(int index, long playerId) {
+
+        index++; // 왜 5번이 사라지는지 모르겠음
+
+        File deckFile = new File(Main.BASIC_PATH + "/Database/" + playerId + "/deck.txt");
+        if (!deckFile.exists()) return;
+        String deckStr = new ReadFile().readString(deckFile);
+
+        String[] decks = Objects.requireNonNull(deckStr).split("\n");
+        StringBuilder builder = new StringBuilder();
+
+        for (int i = 0; i < decks.length; i++) {
+            if (i != index) {
+                if (i == decks.length - 1) {
+                    builder.append(decks[i]);
+                } else {
+                    builder.append(decks[i]).append("\n");
+                }
+            }
+        }
+
+        new WriteFile().writeString(deckFile, builder.toString());
+        if (Main.verbose) LogHelper.userLog("Removed a card", Objects.requireNonNull(PlayerManager.getPlayerById(String.valueOf(playerId))));
+
+    }
+
 }
 
 class InvalidCardInformationException extends Exception {

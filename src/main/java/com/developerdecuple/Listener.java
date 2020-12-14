@@ -9,6 +9,8 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 public class Listener extends ListenerAdapter {
@@ -40,7 +42,7 @@ public class Listener extends ListenerAdapter {
             if (messageArguments[0].equalsIgnoreCase("/테스트")) {
                 if (messageArguments.length == 1 && PlayerManager.getPlayerById(discordUser.getId()) != null) {
                     CardManager.giveCard(0, Long.parseLong(discordUser.getId()));
-                    channel.sendMessage("`" + CardReader.readCardById(0).getName() + "` 카드를 드렸습니다.").queue();
+                    channel.sendMessage("`" + Objects.requireNonNull(CardReader.readCardById(0)).getName() + "` 카드를 드렸습니다.").queue();
                     message.delete().queue();
                 } else {
                     channel.sendMessage("카드를 받으려면 등록을 해야 합니다. `/등록`을 먼저 입력해 주세요.").queue();
@@ -50,28 +52,63 @@ public class Listener extends ListenerAdapter {
 
             if (messageArguments[0].equalsIgnoreCase("/리스트")) {
                 if (messageArguments.length == 1 && PlayerManager.getPlayerById(discordUser.getId()) != null) {
-                    List<Card> cards = PlayerManager.getCardListById(discordUser.getId());
+                    sendCardList(channel, discordUser);
+                }
+            }
 
-                    if (cards == null || cards.size() < 1) {
-                        channel.sendMessage("카드가 없으시네요.").queue();
+            if (messageArguments[0].equalsIgnoreCase("/강화")) {
+                if (messageArguments.length == 1) {
+                    channel.sendMessage("카드를 선택해 주세요. (`/강화 [카드번호]`, 카드 번호는 `/리스트`에서 확인할 수 있습니다.)").queue();
+                    sendCardList(channel, discordUser);
+                } else if (messageArguments.length == 2) {
+
+                    if (PlayerManager.getPlayerById(discordUser.getId()) == null) return;
+
+                    int cardNumber = Integer.parseInt(messageArguments[1]);
+                    List<Card> cardList = PlayerManager.getCardListById(discordUser.getId());
+
+                    if (cardNumber > Objects.requireNonNull(cardList).size()) {
+                        channel.sendMessage("카드 번호가 올바르지 않습니다.").queue();
                         return;
                     }
 
-                    StringBuilder cardMessageBuilder = new StringBuilder("```md\n# " + discordUser.getName() + "님의 카드들\n\n" + "> 카드 개수 : " + cards.size() + "\n\n");
+                    int index = cardNumber - 1;
+                    Card card = cardList.get(index);
+                    card.setATK(new Random().nextInt(5) + 1, true);
+                    card.setDEF(new Random().nextInt(5) + 1, true);
+                    card.saveDeck(discordUser.getId());
 
-                    for (int i = 1; i <= cards.size(); i++) {
-                        if (cardMessageBuilder.toString().length() < 1600) {
-                            cardMessageBuilder.append(i).append(". ").append(cards.get(i - 1).toString(true)).append("\n");
-                        }
-                    }
+                    CardManager.removeCard(index, Long.parseLong(discordUser.getId()));
+                    cardList = PlayerManager.getCardListById(discordUser.getId());
+                    Card resultCard = Objects.requireNonNull(cardList).get(cardList.size() - 1);
 
-                    channel.sendMessage(cardMessageBuilder.append("\n```").toString()).delay(1, TimeUnit.MINUTES).queue();
+                    channel.sendMessage("강화 결과!\n```md\n1. " + resultCard.toString(true) + "\n```").queue();
+
                 }
             }
         } catch (ArrayIndexOutOfBoundsException e) {
             e.printStackTrace();
         }
 
+    }
+
+    public void sendCardList(TextChannel channel, User discordUser) {
+        List<Card> cards = PlayerManager.getCardListById(discordUser.getId());
+
+        if (cards == null || cards.size() < 1) {
+            channel.sendMessage("카드가 없으시네요.").queue();
+            return;
+        }
+
+        StringBuilder cardMessageBuilder = new StringBuilder("```md\n# " + discordUser.getName() + "님의 카드들\n\n" + "> 카드 개수 : " + cards.size() + "\n\n");
+
+        for (int i = 1; i <= cards.size(); i++) {
+            if (cardMessageBuilder.toString().length() < 1600) {
+                cardMessageBuilder.append(i).append(". ").append(cards.get(i - 1).toString(true)).append("\n");
+            }
+        }
+
+        channel.sendMessage(cardMessageBuilder.append("\n```").toString()).delay(1, TimeUnit.MINUTES).queue();
     }
 
 }
