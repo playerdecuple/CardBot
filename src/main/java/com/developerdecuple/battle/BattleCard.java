@@ -1,6 +1,6 @@
 package com.developerdecuple.battle;
 
-public class BattleCardSetting {
+public class BattleCard {
 
     public static void battleCardSet() {
 
