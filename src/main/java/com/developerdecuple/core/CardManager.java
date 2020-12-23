@@ -3,6 +3,7 @@ package com.developerdecuple.core;
 import com.developerdecuple.Main;
 
 import java.io.File;
+import java.util.List;
 import java.util.Objects;
 
 public class CardManager {
@@ -15,6 +16,9 @@ public class CardManager {
          */
 
         Card giveCard = CardReader.readCardById(cardId);
+        List<Card> cardList = PlayerManager.getCardListById(String.valueOf(playerId));
+
+        int cardNumber = cardList != null ? cardList.size() - 1 : 0;
 
         if (giveCard == null) {
             try {
@@ -26,14 +30,12 @@ public class CardManager {
             return;
         }
 
-        File deckFile = new File(Main.BASIC_PATH + "/Database/" + playerId + "/deck.txt");
+        giveCard.setCustomId(cardNumber);
 
+        File deckFile = new File(Main.BASIC_PATH + "/Database/" + playerId + "/deck.txt");
         if (!deckFile.exists()) return;
 
-        String deckStr = new ReadFile().readString(deckFile);
-        String result = deckStr + "\n" + giveCard.getCardInfoForSVCFormat();
-
-        new WriteFile().writeString(deckFile, result);
+        giveCard.saveDeck(String.valueOf(playerId));
         if (Main.verbose) LogHelper.userLog("Given a card", Objects.requireNonNull(PlayerManager.getPlayerById(String.valueOf(playerId))));
 
     }
