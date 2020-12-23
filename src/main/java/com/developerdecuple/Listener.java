@@ -1,5 +1,6 @@
 package com.developerdecuple;
 
+import com.developerdecuple.battle.BattleCard;
 import com.developerdecuple.core.*;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
@@ -74,6 +75,12 @@ public class Listener extends ListenerAdapter {
 
                     int index = cardNumber - 1;
                     Card card = cardList.get(index);
+
+                    if (card.isBattleCard()) {
+                        channel.sendMessage("이 카드는 배틀카드이므로 강화할 수 없습니다. 배틀카드를 해제해 주세요.").queue();
+                        return;
+                    }
+
                     card.setATK(new Random().nextInt(5) + 1, true);
                     card.setDEF(new Random().nextInt(5) + 1, true);
                     card.saveDeck(discordUser.getId());
@@ -83,6 +90,27 @@ public class Listener extends ListenerAdapter {
                     Card resultCard = Objects.requireNonNull(cardList).get(cardList.size() - 1);
 
                     channel.sendMessage("강화 결과!\n```md\n1. " + resultCard.toString(true) + "\n```").queue();
+
+                }
+            }
+
+            if (messageArguments[0].equalsIgnoreCase("/배틀카드")) {
+                if (messageArguments.length == 1) {
+                    channel.sendMessage("카드를 선택해 주세요. (`/배틀카트 [카드번호]`, 카드 번호는 `/리스트`에서 확인할 수 있습니다.)").queue();
+                    sendCardList(channel, discordUser);
+                } else {
+
+                    if (PlayerManager.getPlayerById(discordUser.getId()) == null) return;
+
+                    int cardNumber = Integer.parseInt(messageArguments[1]);
+                    List<Card> cardList = PlayerManager.getCardListById(discordUser.getId());
+
+                    if (cardNumber > Objects.requireNonNull(cardList).size()) {
+                        channel.sendMessage("카드 번호가 올바르지 않습니다.").queue();
+                        return;
+                    }
+
+
 
                 }
             }
