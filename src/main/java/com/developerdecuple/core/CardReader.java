@@ -70,7 +70,7 @@ public class CardReader {
 
             }
 
-            cardList.add(new Card(id, name, star, attackStatus, defenseStatus, description));
+            cardList.add(new Card(id, name, star, attackStatus, defenseStatus, description, false));
 
 
         }

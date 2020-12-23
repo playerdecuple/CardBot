@@ -131,8 +131,37 @@ public class PlayerManager {
                 int cardATK = Integer.parseInt(deckInfo[3]);
                 int cardDEF = Integer.parseInt(deckInfo[4]);
                 String cardDescription = deckInfo[5];
+                boolean isBattleCard = deckInfo[6].equalsIgnoreCase("true");
 
-                cardList.add(new Card(cardId, cardName, cardStar, cardATK, cardDEF, cardDescription));
+                cardList.add(new Card(cardId, cardName, cardStar, cardATK, cardDEF, cardDescription, isBattleCard));
+            }
+        }
+
+        return cardList;
+    }
+    
+    public static List<Card> getBattleCardListById(String id) {
+        File battleFile = new File(Main.BASIC_PATH + "/Database/" + id + "/battle.txt");
+        if (!battleFile.exists()) return null;
+
+        String battleString = new ReadFile().readString(battleFile);
+        String[] battleList = battleString != null ? battleString.split("\n") : new String[0];
+
+        List<Card> cardList = new ArrayList<>();
+
+        for (String battle : battleList) {
+            String[] battleInfo = battle.split(",");
+            int cardId = Integer.parseInt(battleInfo[0]);
+
+            if (cardId != -1) {
+                String cardName = battleInfo[2];
+                int cardStar = Integer.parseInt(battleInfo[3]);
+                int cardATK = Integer.parseInt(battleInfo[4]);
+                int cardDEF = Integer.parseInt(battleInfo[5]);
+                String cardDescription = battleInfo[6];
+                boolean isBattleCard = battleInfo[7].equalsIgnoreCase("true");
+
+                cardList.add(new Card(cardId, cardName, cardStar, cardATK, cardDEF, cardDescription, isBattleCard));
             }
         }
 
