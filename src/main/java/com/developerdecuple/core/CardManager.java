@@ -18,7 +18,7 @@ public class CardManager {
         Card giveCard = CardReader.readCardById(cardId);
         List<Card> cardList = PlayerManager.getCardListById(String.valueOf(playerId));
 
-        int cardNumber = cardList != null ? cardList.size() - 1 : 0;
+        int cardNumber = Objects.requireNonNull(cardList).size() - 1;
 
         if (giveCard == null) {
             try {
@@ -31,9 +31,6 @@ public class CardManager {
         }
 
         giveCard.setCustomId(cardNumber);
-
-        File deckFile = new File(Main.BASIC_PATH + "/Database/" + playerId + "/deck.txt");
-        if (!deckFile.exists()) return;
 
         giveCard.saveDeck(String.valueOf(playerId));
         if (Main.verbose) LogHelper.userLog("Given a card", Objects.requireNonNull(PlayerManager.getPlayerById(String.valueOf(playerId))));

@@ -6,6 +6,7 @@ import sun.rmi.runtime.Log;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class PlayerManager {
@@ -23,8 +24,6 @@ public class PlayerManager {
             if (player != null) { // <- Why IntelliJ shows warning message me?
                 player.setName(playerName);
             }
-
-            System.out.println("Course A");
         } else {
             final File newUserDirectory = new File(databaseFile.getPath() + "/" + id);
             newUserDirectory.mkdir();
@@ -56,7 +55,7 @@ public class PlayerManager {
             newUserDirectory.mkdir();
 
             final File deckInformationFile = new File(newUserDirectory.getPath() + "/deck.txt");
-            new WriteFile().writeString(deckInformationFile, "-1,EMPTY_SLOT,-1,-1,-1,EMPTY_SLOT");
+            new WriteFile().writeString(deckInformationFile, "-1,-1,EMPTY_SLOT,-1,-1,-1,EMPTY_SLOT");
 
             Player newPlayer = new Player(Long.parseLong(id), playerName, 1, 0L, 0L, 0L);
             newPlayer.applyPlayerInfoIntoPlayerLists();
@@ -126,14 +125,15 @@ public class PlayerManager {
             int cardId = Integer.parseInt(deckInfo[0]);
 
             if (cardId != -1) {
-                String cardName = deckInfo[1];
-                int cardStar = Integer.parseInt(deckInfo[2]);
-                int cardATK = Integer.parseInt(deckInfo[3]);
-                int cardDEF = Integer.parseInt(deckInfo[4]);
-                String cardDescription = deckInfo[5];
-                boolean isBattleCard = deckInfo[6].equalsIgnoreCase("true");
+                int cardCustomId = Integer.parseInt(deckInfo[0]);
+                String cardName = deckInfo[2];
+                int cardStar = Integer.parseInt(deckInfo[3]);
+                int cardATK = Integer.parseInt(deckInfo[4]);
+                int cardDEF = Integer.parseInt(deckInfo[5]);
+                String cardDescription = deckInfo[6];
+                boolean isBattleCard = deckInfo[7].equalsIgnoreCase("true");
 
-                cardList.add(new Card(cardId, cardName, cardStar, cardATK, cardDEF, cardDescription, isBattleCard));
+                cardList.add(new Card(cardCustomId, cardId, cardName, cardStar, cardATK, cardDEF, cardDescription, isBattleCard));
             }
         }
 
@@ -141,7 +141,7 @@ public class PlayerManager {
     }
     
     public static List<Card> getBattleCardListById(String id) {
-        File battleFile = new File(Main.BASIC_PATH + "/Database/" + id + "/battle.txt");
+        File battleFile = new File(Main.BASIC_PATH + "/Database/" + id + "/deck.txt");
         if (!battleFile.exists()) return null;
 
         String battleString = new ReadFile().readString(battleFile);
@@ -159,9 +159,11 @@ public class PlayerManager {
                 int cardATK = Integer.parseInt(battleInfo[4]);
                 int cardDEF = Integer.parseInt(battleInfo[5]);
                 String cardDescription = battleInfo[6];
-                boolean isBattleCard = battleInfo[7].equalsIgnoreCase("true");
+                boolean isBattleCard = Boolean.parseBoolean(battleInfo[7]);
 
-                cardList.add(new Card(cardId, cardName, cardStar, cardATK, cardDEF, cardDescription, isBattleCard));
+                if (isBattleCard) {
+                    cardList.add(new Card(cardId, cardName, cardStar, cardATK, cardDEF, cardDescription, true));
+                }
             }
         }
 

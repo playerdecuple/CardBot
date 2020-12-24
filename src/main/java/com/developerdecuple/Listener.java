@@ -83,13 +83,9 @@ public class Listener extends ListenerAdapter {
 
                     card.setATK(new Random().nextInt(5) + 1, true);
                     card.setDEF(new Random().nextInt(5) + 1, true);
-                    card.saveDeck(discordUser.getId());
+                    card.applyDeck(discordUser.getId());
 
-                    CardManager.removeCard(index, Long.parseLong(discordUser.getId()));
-                    cardList = PlayerManager.getCardListById(discordUser.getId());
-                    Card resultCard = Objects.requireNonNull(cardList).get(cardList.size() - 1);
-
-                    channel.sendMessage("강화 결과!\n```md\n1. " + resultCard.toString(true) + "\n```").queue();
+                    channel.sendMessage("강화 결과!\n```md\n1. " + card.toString(true) + "\n```").queue();
 
                 }
             }
@@ -110,7 +106,22 @@ public class Listener extends ListenerAdapter {
                         return;
                     }
 
+                    int index = cardNumber - 1;
+                    Card card = cardList.get(index);
 
+                    List<Card> battleCardList = PlayerManager.getBattleCardListById(discordUser.getId());
+
+                    if (!card.isBattleCard() && battleCardList != null) {
+                        if (battleCardList.size() >= 5) {
+                            channel.sendMessage("배틀 카드는 5개까지만 선택할 수 있습니다.").delay(10, TimeUnit.SECONDS).queue();
+                            return;
+                        }
+                    }
+
+                    card.setBattleCard(!card.isBattleCard());
+                    card.applyDeck(discordUser.getId());
+
+                    channel.sendMessage(cardNumber + "번 카드(`" + card.getName() + "`)를 배틀 카드" + (card.isBattleCard() ? "로 설정했습니다." : "에서 제외했습니다.")).queue();
 
                 }
             }
