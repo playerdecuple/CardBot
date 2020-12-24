@@ -1,6 +1,5 @@
 package com.developerdecuple;
 
-import com.developerdecuple.battle.BattleCard;
 import com.developerdecuple.core.*;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
@@ -33,22 +32,20 @@ public class Listener extends ListenerAdapter {
                 if (messageArguments.length == 1 && PlayerManager.getPlayerById(discordUser.getId()) == null) {
                     PlayerManager.updatePlayer(discordUser.getId(), ev.getJDA());
                     channel.sendMessage("등록을 완료하였습니다.").delay(10, TimeUnit.SECONDS).flatMap(Message::delete).queue();
-                    message.delete().queue();
                 } else {
                     channel.sendMessage("이미 등록되어 계십니다.").delay(10, TimeUnit.SECONDS).flatMap(Message::delete).queue();
-                    message.delete().queue();
                 }
+                message.delete().queue();
             }
 
             if (messageArguments[0].equalsIgnoreCase("/테스트")) {
                 if (messageArguments.length == 1 && PlayerManager.getPlayerById(discordUser.getId()) != null) {
                     CardManager.giveCard(0, Long.parseLong(discordUser.getId()));
                     channel.sendMessage("`" + Objects.requireNonNull(CardReader.readCardById(0)).getName() + "` 카드를 드렸습니다.").queue();
-                    message.delete().queue();
                 } else {
                     channel.sendMessage("카드를 받으려면 등록을 해야 합니다. `/등록`을 먼저 입력해 주세요.").queue();
-                    message.delete().queue();
                 }
+                message.delete().queue();
             }
 
             if (messageArguments[0].equalsIgnoreCase("/리스트")) {
