@@ -8,6 +8,7 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Random;
@@ -89,7 +90,7 @@ public class Listener extends ListenerAdapter {
 
             if (messageArguments[0].equalsIgnoreCase("/배틀카드")) {
                 if (messageArguments.length == 1) {
-                    channel.sendMessage("카드를 선택해 주세요. (`/배틀카트 [카드번호]`, 카드 번호는 `/리스트`에서 확인할 수 있습니다.)").queue();
+                    channel.sendMessage("카드를 선택해 주세요. (`/배틀카드 [카드번호]`, 카드 번호는 `/리스트`에서 확인할 수 있습니다.)").queue();
                     sendCardList(channel, discordUser);
                 } else {
 
@@ -121,6 +122,50 @@ public class Listener extends ListenerAdapter {
                     channel.sendMessage(cardNumber + "번 카드(`" + card.getName() + "`)를 배틀 카드" + (card.isBattleCard() ? "로 설정했습니다." : "에서 제외했습니다.")).queue();
 
                 }
+            }
+
+            if (messageArguments[0].equalsIgnoreCase("/별명")) {
+                if (messageArguments.length < 3) {
+                    channel.sendMessage("카드를 선택해 주세요. (`/별명 [카드번호] [별명]`, 카드 번호는 `/리스트`에서 확인할 수 있습니다.)").queue();
+                    sendCardList(channel, discordUser);
+                } else {
+
+                    if (PlayerManager.getPlayerById(discordUser.getId()) == null) return;
+
+                    int cardNumber = Integer.parseInt(messageArguments[1]);
+                    List<Card> cardList = PlayerManager.getCardListById(discordUser.getId());
+
+                    if (cardNumber > Objects.requireNonNull(cardList).size()) {
+                        channel.sendMessage("카드 번호가 올바르지 않습니다.").queue();
+                        return;
+                    }
+
+                    int index = cardNumber - 1;
+                    Card card = cardList.get(index);
+
+                    card.setName(String.join(" ", Arrays.copyOfRange(messageArguments, 2, messageArguments.length)));
+                    card.applyDeck(discordUser.getId());
+
+                    channel.sendMessage(cardNumber + "번 카드의 이름을 `" + card.getName() + "`(으)로 설정했습니다.").queue();
+
+                }
+            }
+
+            if (messageArguments[0].equalsIgnoreCase("/10회뽑기")) {
+                if (messageArguments.length == 1 && PlayerManager.getPlayerById(discordUser.getId()) != null) {
+                    StringBuilder sb = new StringBuilder("```md\n");
+
+                    for (int i = 0; i < 10; i++) {
+                        int rndNum = new Random().nextInt(11);
+                        CardManager.giveCard(rndNum, Long.parseLong(discordUser.getId()));
+                        sb.append(i).append(". ").append(Objects.requireNonNull(CardReader.readCardById(rndNum)).toString(true)).append("\n");
+                    }
+
+                    channel.sendMessage("카드를 드렸습니다!" + sb.append("\n```").toString()).queue();
+                } else {
+                    channel.sendMessage("카드를 받으려면 등록을 해야 합니다. `/등록`을 먼저 입력해 주세요.").queue();
+                }
+                message.delete().queue();
             }
         } catch (ArrayIndexOutOfBoundsException e) {
             e.printStackTrace();
