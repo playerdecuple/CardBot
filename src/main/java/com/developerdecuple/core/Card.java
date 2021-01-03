@@ -3,7 +3,6 @@ package com.developerdecuple.core;
 import com.developerdecuple.Main;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -12,7 +11,7 @@ public class Card {
 
     private int customId = 0;
     private final int id;
-    private final String name;
+    private String name;
     private final int star;
     private int atk;
     private int def;
@@ -56,6 +55,8 @@ public class Card {
         return name;
     }
 
+    public String getDefaultName() { return Objects.requireNonNull(CardReader.readCardById(id)).getName(); }
+
     public int getStar() {
         return star;
     }
@@ -71,6 +72,8 @@ public class Card {
     public String getDescription() {
         return description;
     }
+
+    public void setName(String name) { this.name = name; }
 
     public void setATK(int amount, boolean add) {
         atk = add ? atk + amount : amount;
